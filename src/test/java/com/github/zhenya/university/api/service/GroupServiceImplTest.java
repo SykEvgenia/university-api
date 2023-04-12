@@ -1,14 +1,13 @@
 package com.github.zhenya.university.api.service;
 
-import com.github.zhenya.university.api.dto.group.AddGroupDto;
+import com.github.zhenya.university.api.dto.group.CrudGroupDto;
 import com.github.zhenya.university.api.dto.group.GroupDto;
-import com.github.zhenya.university.api.dto.group.PutGroupDto;
 import com.github.zhenya.university.api.entity.Group;
 import com.github.zhenya.university.api.repository.GroupRepository;
 import com.github.zhenya.university.api.repository.StudentRepository;
 import com.github.zhenya.university.api.servise.GroupServiceImpl;
-import com.github.zhenya.university.api.servise.convertor.ConvertorGroupDto;
-import com.github.zhenya.university.api.servise.convertor.ConvertorGroupEntity;
+import com.github.zhenya.university.api.servise.convertor.GroupDtoConvertor;
+import com.github.zhenya.university.api.servise.convertor.GroupEntityConvertor;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,56 +30,55 @@ public class GroupServiceImplTest {
     @Mock
     private StudentRepository studentRepository;
     @Mock
-    private ConvertorGroupEntity convertorGroupEntity;
+    private GroupEntityConvertor groupEntityConvertor;
     @Mock
-    private ConvertorGroupDto convertorGroupDto;
+    private GroupDtoConvertor groupDtoConvertor;
 
     @InjectMocks
     private GroupServiceImpl service;
 
-    private final GroupDto groupDto = getGroupDto();
-    private final Group group = getGroup();
-    private final AddGroupDto addGroupDto = getAddGroupDto();
-    private final PutGroupDto putGroupDto = getPutGroupDto();
+    private final GroupDto groupDto = new GroupDto();
+    private final Group group = new Group();
+    private final CrudGroupDto crudGroupDto = new CrudGroupDto();
 
     @Test
     public void addGroup() {
-        when(convertorGroupEntity.convertToGroup(any(AddGroupDto.class))).thenReturn(group);
+        when(groupEntityConvertor.convertToGroup(any())).thenReturn(group);
         when(repository.save(any())).thenReturn(group);
-        when(convertorGroupDto.convertToGroupDto(any(Group.class))).thenReturn(groupDto);
+        when(groupDtoConvertor.convertToGroupDto(any())).thenReturn(groupDto);
 
-        GroupDto dto = service.addGroup(addGroupDto);
+        GroupDto dto = service.addGroup(crudGroupDto);
 
         assertNotNull(dto);
-        verify(convertorGroupEntity).convertToGroup(any(AddGroupDto.class));
+        verify(groupEntityConvertor).convertToGroup(any());
         verify(repository).save(notNull());
-        verify(convertorGroupDto).convertToGroupDto(any(Group.class));
+        verify(groupDtoConvertor).convertToGroupDto(any());
     }
 
     @Test
     public void putGroup() {
-        when(convertorGroupEntity.convertToGroup(any(PutGroupDto.class))).thenReturn(group);
+        when(groupEntityConvertor.convertToGroup(any(), any())).thenReturn(group);
         when(repository.save(any())).thenReturn(group);
-        when(convertorGroupDto.convertToGroupDto(any(Group.class))).thenReturn(groupDto);
+        when(groupDtoConvertor.convertToGroupDto(any())).thenReturn(groupDto);
 
-        GroupDto dto = service.putGroup(putGroupDto);
+        GroupDto dto = service.putGroup("6431a3775f131e00aa69014f", crudGroupDto);
 
         assertNotNull(dto);
-        verify(convertorGroupEntity).convertToGroup(any(PutGroupDto.class));
+        verify(groupEntityConvertor).convertToGroup(any(), any());
         verify(repository).save(notNull());
-        verify(convertorGroupDto).convertToGroupDto(any(Group.class));
+        verify(groupDtoConvertor).convertToGroupDto(any());
     }
 
     @Test
     public void getGroups() {
         when(repository.findAll()).thenReturn(List.of(group));
-        when(convertorGroupDto.convertToGroupsDto(anyList())).thenReturn(List.of(groupDto));
+        when(groupDtoConvertor.convertToGroupsDto(anyList())).thenReturn(List.of(groupDto));
 
         List<GroupDto> groups = service.getGroups();
 
         assertNotNull(groups);
         verify(repository).findAll();
-        verify(convertorGroupDto).convertToGroupsDto(anyList());
+        verify(groupDtoConvertor).convertToGroupsDto(anyList());
     }
 
     @Test
@@ -89,36 +87,5 @@ public class GroupServiceImplTest {
 
         verify(studentRepository).deleteAllByGroupId(new ObjectId("6431a3775f131e00aa69014f"));
         verify(repository).deleteById(new ObjectId("6431a3775f131e00aa69014f"));
-    }
-
-    private Group getGroup() {
-        return Group.builder()
-                .id(new ObjectId("6431a3775f131e00aa69014f"))
-                .number(154)
-                .specialtyName("Економіка")
-                .build();
-    }
-
-    private GroupDto getGroupDto() {
-        return GroupDto.builder()
-                .id("6431a3775f131e00aa69014f")
-                .number(154)
-                .specialtyName("Економіка")
-                .build();
-    }
-
-    private AddGroupDto getAddGroupDto() {
-        return AddGroupDto.builder()
-                .number(154)
-                .specialtyName("Економіка")
-                .build();
-    }
-
-    private PutGroupDto getPutGroupDto() {
-        return PutGroupDto.builder()
-                .id("6431a3775f131e00aa69014f")
-                .number(154)
-                .specialtyName("Економіка")
-                .build();
     }
 }

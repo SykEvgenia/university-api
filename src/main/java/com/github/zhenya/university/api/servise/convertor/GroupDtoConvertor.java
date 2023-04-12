@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ConvertorGroupDto {
+public class GroupDtoConvertor {
 
     public GroupDto convertToGroupDto(Group group) {
         return GroupDto.builder()

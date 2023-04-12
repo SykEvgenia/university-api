@@ -3,10 +3,7 @@ package com.github.zhenya.university.api.dto.student;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -14,11 +11,9 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @AllArgsConstructor
-public class PutStudentDto {
+@NoArgsConstructor
+public class CrudStudentDto {
 
-    @NotBlank
-    @JsonProperty("id")
-    private String id;
     @NotBlank
     @JsonProperty("name")
     private String name;

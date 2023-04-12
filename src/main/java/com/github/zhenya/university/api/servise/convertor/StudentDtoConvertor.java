@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class ConvertorStudentDto {
+public class StudentDtoConvertor {
 
     public StudentDto convertToStudentDto(Student student) {
         return StudentDto.builder()

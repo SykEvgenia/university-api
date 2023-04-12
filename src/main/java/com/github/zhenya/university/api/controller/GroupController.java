@@ -1,8 +1,7 @@
 package com.github.zhenya.university.api.controller;
 
-import com.github.zhenya.university.api.dto.group.AddGroupDto;
+import com.github.zhenya.university.api.dto.group.CrudGroupDto;
 import com.github.zhenya.university.api.dto.group.GroupDto;
-import com.github.zhenya.university.api.dto.group.PutGroupDto;
 import com.github.zhenya.university.api.servise.GroupService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -25,13 +24,13 @@ public class GroupController {
     }
 
     @PostMapping("/group")
-    public GroupDto addGroup(@RequestBody @Valid AddGroupDto dto) {
+    public GroupDto addGroup(@RequestBody @Valid CrudGroupDto dto) {
         return service.addGroup(dto);
     }
 
-    @PutMapping("/group")
-    public GroupDto putGroup(@RequestBody @Valid PutGroupDto dto){
-        return service.putGroup(dto);
+    @PutMapping("/group/{id}")
+    public GroupDto putGroup(@PathVariable("id") @NotBlank String id, @RequestBody @Valid CrudGroupDto dto) {
+        return service.putGroup(id, dto);
     }
 
     @DeleteMapping("/group/{id}")

@@ -1,11 +1,10 @@
 package com.github.zhenya.university.api.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -16,7 +15,11 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "student")
+@CompoundIndexes({
+        @CompoundIndex(unique = true, name = "student", def = "{'name' : 1, 'surname': 1, 'patronymic': 1, 'birthDate': 1}")
+})
 public class Student {
 
     @Id

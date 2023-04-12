@@ -1,7 +1,6 @@
 package com.github.zhenya.university.api.controller;
 
-import com.github.zhenya.university.api.dto.student.AddStudentDto;
-import com.github.zhenya.university.api.dto.student.PutStudentDto;
+import com.github.zhenya.university.api.dto.student.CrudStudentDto;
 import com.github.zhenya.university.api.dto.student.StudentDto;
 import com.github.zhenya.university.api.servise.StudentServiceImpl;
 import jakarta.validation.Valid;
@@ -24,17 +23,17 @@ public class StudentController {
     @GetMapping("/student")
     public List<StudentDto> getStudents(@RequestParam("surname") @NotNull String surname,
                                         @RequestParam("groupNumber") @Min(1) int groupNumber) {
-        return service.getStudents(surname,groupNumber);
+        return service.getStudents(surname, groupNumber);
     }
 
     @PostMapping("/student")
-    public StudentDto addStudent(@RequestBody @Valid AddStudentDto dto) {
+    public StudentDto addStudent(@RequestBody @Valid CrudStudentDto dto) {
         return service.addStudent(dto);
     }
 
-    @PutMapping("/student")
-    public StudentDto putStudent(@RequestBody @Valid PutStudentDto dto) {
-        return service.putStudent(dto);
+    @PutMapping("/student/{id}")
+    public StudentDto putStudent(@PathVariable("id") @NotBlank String id, @RequestBody @Valid CrudStudentDto dto) {
+        return service.putStudent(id, dto);
     }
 
     @DeleteMapping("/student/{id}")

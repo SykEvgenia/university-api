@@ -1,13 +1,13 @@
 package com.github.zhenya.university.api.servise;
 
-import com.github.zhenya.university.api.dto.student.AddStudentDto;
-import com.github.zhenya.university.api.dto.student.PutStudentDto;
+import com.github.zhenya.university.api.dto.student.CrudStudentDto;
 import com.github.zhenya.university.api.dto.student.StudentDto;
-import com.github.zhenya.university.api.entity.Student;
+import com.github.zhenya.university.api.entity.Group;
 import com.github.zhenya.university.api.repository.GroupRepository;
 import com.github.zhenya.university.api.repository.StudentRepository;
-import com.github.zhenya.university.api.servise.convertor.ConvertorStudentDto;
-import com.github.zhenya.university.api.servise.convertor.ConvertorStudentEntity;
+import com.github.zhenya.university.api.servise.convertor.StudentDtoConvertor;
+import com.github.zhenya.university.api.servise.convertor.StudentEntityConvertor;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
@@ -20,26 +20,26 @@ public class StudentServiceImpl implements StudentService {
 
     private StudentRepository studentRepository;
     private GroupRepository groupRepository;
-    private ConvertorStudentEntity convertorStudentEntity;
-    private ConvertorStudentDto convertorStudentDto;
+    private StudentEntityConvertor studentEntityConvertor;
+    private StudentDtoConvertor studentDtoConvertor;
 
     @Override
-    public StudentDto addStudent(AddStudentDto dto) {
-        return convertorStudentDto.convertToStudentDto(studentRepository
-                .save(convertorStudentEntity.convertToStudent(dto)));
+    public StudentDto addStudent(CrudStudentDto dto) {
+        return studentDtoConvertor.convertToStudentDto(studentRepository
+                .save(studentEntityConvertor.convertToStudent(dto, getGroup(dto.getGroupId()))));
     }
 
     @Override
     public List<StudentDto> getStudents(String surname, int groupNumber) {
-        return searchStudent(surname, groupNumber).stream()
-                .map(student -> convertorStudentDto.convertToStudentDto(student))
+        return studentRepository.findAllBySurnameAndGroup(surname, getGroup(groupNumber)).stream()
+                .map(student -> studentDtoConvertor.convertToStudentDto(student))
                 .toList();
     }
 
     @Override
-    public StudentDto putStudent(PutStudentDto dto) {
-        return convertorStudentDto.convertToStudentDto(studentRepository
-                .save(convertorStudentEntity.convertToStudent(dto)));
+    public StudentDto putStudent(String id, CrudStudentDto dto) {
+        return studentDtoConvertor.convertToStudentDto(studentRepository
+                .save(studentEntityConvertor.convertToStudent(id, dto, getGroup(dto.getGroupId()))));
     }
 
     @Override
@@ -47,7 +47,13 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.deleteById(new ObjectId(id));
     }
 
-    private List<Student> searchStudent(String surname, int groupNumber) {
-        return studentRepository.findAllBySurnameAndGroup(surname, groupRepository.findByNumber(groupNumber));
+    private Group getGroup(String id) {
+        return groupRepository.findById(new ObjectId(id))
+                .orElseThrow(() -> new ValidationException(String.format("Групу з id = [%s] не знайдено", id)));
+    }
+
+    private Group getGroup(int groupNumber) {
+        return groupRepository.findByNumber(groupNumber)
+                .orElseThrow(() -> new ValidationException(String.format("Групу з number = [%s] не знайдено", groupNumber)));
     }
 }
